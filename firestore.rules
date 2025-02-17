@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Проверка, является ли пользователь авторизованным
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Проверка, принадлежит ли email к разрешенному домену
+    function hasAllowedEmail() {
+      return request.auth.token.email.matches('.*@luxsclad[.]com') || 
+             request.auth.token.email in ['daniyalzhusupov@gmail.com', 'admin@luxsclad.com', 'zusupov2050@gmail.com','ars.erg@icloud.com'];
+    }
+
+    // Проверка, является ли пользователь администратором
+    function isAdmin() {
+      return request.auth.token.email in ['daniyalzhusupov@gmail.com', 'admin@luxsclad.com', 'zusupov2050@gmail.com','ars.erg@icloud.com'];
+    }
+
+    // Правила для коллекции purchases (закупки)
+    match /purchases/{purchaseId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (hasAllowedEmail() || isAdmin());
+    }
+
+    // Правила для коллекции warehouse (склад)
+    match /warehouse/{warehouseId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (hasAllowedEmail() || isAdmin());
+    }
+
+    // Правила для коллекции cart (корзина)
+    match /cart/{cartId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (hasAllowedEmail() || isAdmin());
+    }
+
+    // Правила для коллекции sales (продажи)
+    match /sales/{saleId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (hasAllowedEmail() || isAdmin());
+    }
+
+    // Правила для коллекции checks (чеки)
+    match /checks/{checkId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (hasAllowedEmail() || isAdmin());
+    }
+
+    // Правила для публичных коллекций (доступных для чтения всем)
+    match /public/{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && hasAllowedEmail();
+    }
+
+    // Правила для защищенных коллекций
+    match /protected/{document=**} {
+      allow read, write: if isAuthenticated() && hasAllowedEmail();
+    }
+
+    // Специальные правила для коллекции пользователей
+    match /users/{userId} {
+      allow create: if true; // Разрешаем создание аккаунта всем
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow update, delete: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Правила для административных коллекций
+    match /admin/{document=**} {
+      allow read, write: if isAuthenticated() && isAdmin();
+    }
+  }
+}

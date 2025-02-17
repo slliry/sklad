@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "75642006425",
+    "project_id": "luxsclad",
+    "storage_bucket": "luxsclad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75642006425:android:8ba45285ebe1fe2aea8108",
+        "android_client_info": {
+          "package_name": "com.luxsclad.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABa7WsWhGeQAgfACYv4gayNWonr3gEF1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
